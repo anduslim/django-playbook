@@ -1,0 +1,69 @@
+---
+# Download dependencies for Python 3 and install from source
+- name: Install dependencies for Python 3 (Debian)
+  apt: name={{ item }} state=present
+  with_items:
+  - build-essential 
+  - bzip2 
+  - libbz2-dev 
+  - libssl-dev
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: install the 'Development tools' package group
+  yum: name="@Development tools" state=present
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  sudo: yes
+  sudo_user: root
+
+- name: Install dependencies for Python 3 (CentOS)
+  yum: name={{ item }} state=present
+  with_items:
+  - bzip2 
+  - bzip2-libs 
+  - openssl-devel
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  sudo: yes
+  sudo_user: root
+
+- name: Get Python 3 source
+  get_url: url=https://www.python.org/ftp/python/3.4.1/Python-{{ python_version }}.tar.xz dest=/tmp/Python-{{ python_version }}.tar.xz
+
+- name: Extract archive
+  command: chdir=/tmp/ /bin/tar vxf Python-{{ python_version }}.tar.xz creates=/tmp/Python-{{ python_version }}
+
+- name: Make Python 3
+  command: chdir=/tmp/Python-{{ python_version }} {{ item }}
+  with_items:
+  - ./configure --prefix=/opt/python{{ python_version }} 
+  - make 
+  - make install
+  sudo: yes
+  sudo_user: root  
+
+- name: Append python3 binary path to default path
+  shell: echo "export PATH=$PATH:/opt/python3.4.1/bin" >> /home/vagrant/.bashrc
+
+- name: Check if pip is installed
+  command: pip3 --version
+  register: pipversion
+
+- name: install pip if pip is not installed (Debian)
+  apt: name=python3-pip state=present
+  when: pipversion.rc == 1 and ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: install pip if pip is not installed (CentOS)
+  yum: name=python3-pip state=present
+  when: pipversion.rc == 1 and ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  sudo: yes
+  sudo_user: root
+
+- name: update-alternatives for python 2
+  command: /usr/sbin/alternatives --install /usr/bin/python python /usr/bin/python2 20
+  sudo: yes
+  sudo_user: root
+
+- name: update-alternatives for python 3
+  command: /usr/sbin/alternatives --install /usr/bin/python python /opt/python{{ python_version }}/bin/python3 10
+  sudo: yes
+  sudo_user: root
+

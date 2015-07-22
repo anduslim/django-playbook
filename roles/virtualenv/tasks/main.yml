@@ -1,0 +1,27 @@
+---
+- name: Install virtualenvwrapper
+  shell: /opt/python3.4.1/bin/pip3 install virtualenvwrapper 
+  sudo: yes
+  sudo_user: root
+
+- name: Make virtualenv folder
+  file: path={{ virtualenv_config_path }} owner=root group=root state=directory
+  sudo: yes
+  sudo_user: root
+ 
+- name: Set environment variables for virtualenvwrapper
+  template: src=virtualenv_env dest={{ virtualenv_config_path }}/config
+  sudo: yes
+  sudo_user: root
+
+- name: get output from bashrc
+  sudo: yes
+  sudo_user: root
+  shell: cat /root/.bashrc
+  register: bashrc_contents
+
+- name: check if virtualenv config has been added into bashrc
+  sudo: yes
+  sudo_user: root
+  shell: cat "{{ virtualenv_config_path }}/config" >> /root/.bashrc
+  when: bashrc_contents.stdout.find("{{ virtualenv_config_path }}") == -1

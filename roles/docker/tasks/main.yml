@@ -1,0 +1,31 @@
+---
+- name: Get kernel version
+  command: uname -r
+  register: kernel_version
+
+- name: Install docker (CentOS)
+  yum: name=/home/vagrant/sources/docker-engine-1.7.1-1.el6.x86_64.rpm state=present
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  sudo: yes
+  sudo_user: root
+
+- name: Debug kernel version
+  debug: var=kernel_version.stdout.split('-')[0]
+
+- name: Install docker (Debian)
+  command: wget -qO- https://get.docker.com/ | sh
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  sudo: yes
+  sudo_user: root
+
+- name: Create docker group
+  shell: usermod -aG docker vagrant
+  sudo: yes
+  sudo_user: root
+
+- name: Run docker (CentOS)
+  shell: systemctl start docker && sleep 8
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  sudo: yes
+  sudo_user: root
+

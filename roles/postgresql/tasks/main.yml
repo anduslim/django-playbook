@@ -1,0 +1,5 @@
+---
+- name: Install postgresql image
+  shell: docker run -d --name db -p 5432:5432 andus/tinypostgresql
+  sudo: yes
+  sudo_user: root 

@@ -1,0 +1,8 @@
+[digitalocean]
+128.199.184.178
+
+[aws]
+ip-172-30-1-50.ap-southeast-1.compute.internal
+
+[dev]
+mynode

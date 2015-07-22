@@ -1,0 +1,11 @@
+---
+- name: Install Python3, virtualenv and Django
+  hosts: dev
+  remote_user: vagrant
+
+  roles:
+    - { role: common, tags: [ 'common' ] }
+    - { role: docker, tags: [ 'docker' ] }
+    - { role: python3, tags: [ 'python3' ] }
+    - { role: virtualenv, tags: [ 'virtualenv' ] }
+    - { role: postgresql, tags: [ 'postgresql' ] }

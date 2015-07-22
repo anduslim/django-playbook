@@ -1,0 +1,10 @@
+---
+# django related
+django_settings_role: production
+
+# python related
+python_version: 3.4.1
+
+#virtualenv related
+virtualenv_config_path: /etc/virtualenv
+virtualenv_script: virtualenvwrapper.sh

@@ -1,0 +1,2 @@
+VIRTUALENVWRAPPER_PYTHON=/opt/python{{ python_version }}/bin/python3
+source /opt/python{{ python_version }}/bin/{{ virtualenv_script }}
